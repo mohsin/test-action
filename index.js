@@ -1,4 +1,5 @@
 const core  = require('@actions/core');
+const fetch = require('node-fetch');
 
 try {
   // `who-to-greet` input defined in action metadata file
