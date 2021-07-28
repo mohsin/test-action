@@ -5,7 +5,7 @@ try {
   const instagramId = core.getInput('instagram-id');
   const instagramAccessToken = core.getInput('instagram-access-token');
   const URL = 'https://graph.instagram.com/v11.0/' + instagramId + '/media?access_token=' + instagramAccessToken;
-  fetch(URL,  init:{method: 'GET', headers:{}})
+  fetch(URL)
     .then(response => response.json())
     .then(data => console.log(data))
     .catch(error => console.log(error));

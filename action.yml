@@ -1,10 +1,16 @@
 name: 'Hello World'
 description: 'Greet someone and record the time'
 inputs:
-  who-to-greet:  # id of input
-    description: 'Who to greet'
+  instagram-id:  # id of input
+    description: 'Instagram ID'
     required: true
-    default: 'World'
+  instagram-access-token:
+    description: 'Instagram Access Token'
+    required: true
+  target-path:
+    description: 'Target path for output JSON file'
+    required: false
+    default: 'instagram.json'
 outputs:
   time: # id of output
     description: 'The time we greeted you'
