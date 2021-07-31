@@ -12,8 +12,7 @@ function commitAndPush (
   exec(`git config --global user.email "${email}"`);
   exec(`git config --global user.name "${name}"`);
   exec(`git add .`);
-  console.log(`git commit -m '${message.replace(/\"/g, "''")}'`)
-  exec(`git commit -m 'hello'`);
+  exec(`git commit -m "${message.replace(/\"/g, "''")}"`);
   const result = exec("git push");
   if (result.includes("error:")) throw new Error(result);
 };
@@ -44,17 +43,21 @@ fetch(instagramUrl)
   resultsMap[item.value.id] = media_url.toString()
 }))
 .then(() => {
-  fs.readJson(targetPath)
-  .then(instagramJson => {
-    if (!_.isEqual(instagramJson, resultsMap)) {
-      fs.outputJson(targetPath, resultsMap)
-    }
-  })
-  .catch(err => {
-    if (err.code === 'ENOENT') {
+  fs.exists(targetPath, (exists) => {
+    if (!exists) {
       console.log(`File not found at '${targetPath}'. Creating...`)
       fs.outputJson(targetPath, resultsMap)
-    }
+    } else {
+      fs.readJson(targetPath)
+        .then(instagramJson => {
+          if (!_.isEqual(instagramJson, resultsMap)) {
+            fs.outputJson(targetPath, resultsMap)
+          }
+        })
+        .catch(err => {
+          console.log(err.message)
+        })
+        }
   })
 })
 .then(() => commitAndPush(`chore: Updated ${targetPath.split(/[\\/]/).pop()} with the Instagram API`))
