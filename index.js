@@ -13,7 +13,7 @@ function commitAndPush (
   exec(`git config --global user.name "${name}"`);
   exec(`git add .`);
   console.log(`git commit -m '${message.replace(/\"/g, "''")}'`)
-  exec(`git commit -m '${message.replace(/\"/g, "''")}'`);
+  exec(`git commit -m 'hello'`);
   const result = exec("git push");
   if (result.includes("error:")) throw new Error(result);
 };
