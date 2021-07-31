@@ -17,9 +17,9 @@ function commitAndPush (
   if (result.includes("error:")) throw new Error(result);
 };
 
-const instagramId = '3865396510254001';
-const instagramAccessToken = 'IGQVJVN01kQXBCMFozVjRDTkoyWXBueWh2eTdwV1NQVjhaNjNKa2tKTm43QUlFaTN3NV9WakdKS24zTkJvMFU3WE11cDBraGpVaGp0RUNHN3B6OGRHQ1gxdkx1Q0wzdVBEQy11UzJn';
-const targetPath = 'content/instagram.json';
+const instagramId = core.getInput('instagram-id');
+const instagramAccessToken = core.getInput('instagram-access-token');
+const targetPath = core.getInput('target-path');
 
 var promises = [];
 var resultsMap = new Object(null);
