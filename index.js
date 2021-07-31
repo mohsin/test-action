@@ -2,10 +2,11 @@ const core = require('@actions/core');
 const fetch = require('node-fetch');
 const fs = require('fs-extra');
 const { exec } = require('shelljs');
+const _ = require('lodash');
 
 function commitAndPush (
   message,
-  name = "Instagram",
+  name = "Instagram API Bot",
   email = "instagram-bot@users.noreply.github.com"
 ) {
   exec(`git config --global user.email "${email}"`);
@@ -23,8 +24,8 @@ const targetPath = core.getInput('target-path');
 var promises = [];
 var resultsMap = new Object(null);
 
-const URL = 'https://graph.instagram.com/v11.0/' + instagramId + '/media?access_token=' + instagramAccessToken;
-fetch(URL)
+const instagramUrl = 'https://graph.instagram.com/v11.0/' + instagramId + '/media?access_token=' + instagramAccessToken;
+fetch(instagramUrl)
 .then(response => response.json())
 .then(response => {
   results = response.data.slice(0, 4).map(item => Object.defineProperty(resultsMap, item.id, {value : null, writable : true, enumerable : true, configurable : true}))
@@ -36,10 +37,24 @@ fetch(URL)
   return Promise.allSettled(promises);
 })
 .then((results) => results.forEach(item => {
-  resultsMap[item.value.id] = item.value.media_url
+  var media_url = new URL(item.value.media_url)
+  const exclusions = ['_nc_cat', '_nc_rid', 'efg', 'ig_cache_key']
+  exclusions.forEach(key => media_url.searchParams.delete(key))
+  resultsMap[item.value.id] = media_url.toString()
 }))
 .then(() => {
-  fs.outputJson(targetPath, resultsMap)
-  .then(() => commitAndPush(`chore: Updated ${targetPath.split(/[\\/]/).pop()} with the Instagram API`))
+  fs.readJson(targetPath)
+  .then(instagramJson => {
+    if (!_.isEqual(instagramJson, resultsMap)) {
+      fs.outputJson(targetPath, resultsMap)
+    }
+  })
+  .catch(err => {
+    if (err.code === 'ENOENT') {
+      console.log(`File not found at '${targetPath}'. Creating...`)
+      fs.outputJson(targetPath, resultsMap)
+    }
+  })
 })
+.then(() => commitAndPush(`chore: Updated ${targetPath.split(/[\\/]/).pop()} with the Instagram API`))
 .catch(error => core.setFailed(error.message));
