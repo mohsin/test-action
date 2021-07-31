@@ -47,11 +47,13 @@ fetch(instagramUrl)
     if (!exists) {
       console.log(`File not found at '${targetPath}'. Creating...`)
       fs.outputJson(targetPath, resultsMap)
+      commitAndPush(`chore: Updated ${targetPath.split(/[\\/]/).pop()} with the Instagram API`)
     } else {
       fs.readJson(targetPath)
         .then(instagramJson => {
           if (!_.isEqual(instagramJson, resultsMap)) {
             fs.outputJson(targetPath, resultsMap)
+            commitAndPush(`chore: Updated ${targetPath.split(/[\\/]/).pop()} with the Instagram API`)
           }
         })
         .catch(err => {
@@ -60,5 +62,4 @@ fetch(instagramUrl)
         }
   })
 })
-.then(() => commitAndPush(`chore: Updated ${targetPath.split(/[\\/]/).pop()} with the Instagram API`))
 .catch(error => core.setFailed(error.message));
